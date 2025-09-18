@@ -1,1 +1,249 @@
 # LibraryManagementSystem
+import java.util.ArrayList;
+import java.util.Scanner;
+
+class Book {
+    String title;
+    String author;
+    boolean isBorrowed;
+
+    Book(String title, String author) {
+        this.title = title;
+        this.author = author;
+        this.isBorrowed = false;
+    }
+}
+
+class User {
+    String name;
+    ArrayList<Book> borrowedBooks;
+
+    User(String name) {
+        this.name = name;
+        this.borrowedBooks = new ArrayList<>();
+    }
+}
+
+public class LibraryManagementSystem {
+    static ArrayList<Book> books = new ArrayList<>();
+    static ArrayList<User> users = new ArrayList<>();
+    static Scanner scanner = new Scanner(System.in);
+
+    public static void main(String[] args) {
+        seedData();
+        while (true) {
+            System.out.println("\nLibrary Management System Menu:");
+            System.out.println("1. View Books");
+            System.out.println("2. Add Book");
+            System.out.println("3. Register User");
+            System.out.println("4. Borrow Book");
+            System.out.println("5. Return Book");
+            System.out.println("6. View User Borrowed Books");
+            System.out.println("7. Exit");
+            System.out.print("Choose an option: ");
+            int choice = scanner.nextInt();
+            scanner.nextLine();
+
+            switch (choice) {
+                case 1 -> viewBooks();
+                case 2 -> addBook();
+                case 3 -> registerUser();
+                case 4 -> borrowBook();
+                case 5 -> returnBook();
+                case 6 -> viewUserBooks();
+                case 7 -> {
+                    System.out.println("Exiting... Thank you!");
+                    return;
+                }
+                default -> System.out.println("Invalid choice, try again.");
+            }
+        }
+    }
+
+    static void seedData() {
+        books.add(new Book("1984", "George Orwell"));
+        books.add(new Book("To Kill a Mockingbird", "Harper Lee"));
+        users.add(new User("Alice"));
+        users.add(new User("Bob"));
+    }
+
+    static void viewBooks() {
+        System.out.println("Available Books:");
+        for (int i = 0; i < books.size(); i++) {
+            Book b = books.get(i);
+            System.out.println((i + 1) + ". " + b.title + " by " + b.author + (b.isBorrowed ? " (Borrowed)" : ""));
+        }
+    }
+
+    static void addBook() {
+        System.out.print("Enter book title: ");
+        String title = scanner.nextLine();
+        System.out.print("Enter author name: ");
+        String author = scanner.nextLine();
+        books.add(new Book(title, author));
+        System.out.println("Book added successfully.");
+    }
+
+    static void registerUser() {
+        System.out.print("Enter user name: ");
+        String name = scanner.nextLine();
+        users.add(new User(name));
+        System.out.println("User registered successfully.");
+    }
+
+    static void borrowBook() {
+        System.out.print("Enter your user name: ");
+        String userName = scanner.nextLine();
+        User user = findUser(userName);
+        if (user == null) {
+            System.out.println("User not found.");
+            return;
+        }
+        viewBooks();
+        System.out.print("Enter the number of the book to borrow: ");
+        int bookNumber = scanner.nextInt();
+        scanner.nextLine();
+        if (bookNumber < 1 || bookNumber > books.size()) {
+            System.out.println("Invalid book number.");
+            return;
+        }
+        Book book = books.get(bookNumber - 1);
+        if (book.isBorrowed) {
+            System.out.println("Book is already borrowed.");
+            return;
+        }
+        book.isBorrowed = true;
+        user.borrowedBooks.add(book);
+        System.out.println("Book borrowed successfully.");
+    }
+
+    static void returnBook() {
+        System.out.print("Enter your user name: ");
+        String userName = scanner.nextLine();
+        User user = findUser(userName);
+        if (user == null) {
+            System.out.println("User not found.");
+            return;
+        }
+        if (user.borrowedBooks.isEmpty()) {
+            System.out.println("You haven't borrowed any books.");
+            return;
+        }
+        System.out.println("Your borrowed books:");
+        for (int i = 0; i < user.borrowedBooks.size(); i++) {
+            Book b = user.borrowedBooks.get(i);
+            System.out.println((i + 1) + ". " + b.title);
+        }
+        System.out.print("Enter the number of the book to return: ");
+        int bookNumber = scanner.nextInt();
+        scanner.nextLine();
+        if (bookNumber < 1 || bookNumber > user.borrowedBooks.size()) {
+            System.out.println("Invalid book number.");
+            return;
+        }
+        Book book = user.borrowedBooks.remove(bookNumber - 1);
+        book.isBorrowed = false;
+        System.out.println("Book returned successfully.");
+    }
+
+    static void viewUserBooks() {
+        System.out.print("Enter user name: ");
+        String userName = scanner.nextLine();
+        User user = findUser(userName);
+        if (user == null) {
+            System.out.println("User not found.");
+            return;
+        }
+        if (user.borrowedBooks.isEmpty()) {
+            System.out.println(userName + " has not borrowed any books.");
+        } else {
+            System.out.println(userName + "'s borrowed books:");
+            for (Book b : user.borrowedBooks) {
+                System.out.println("- " + b.title);
+            }
+        }
+    }
+
+    static User findUser(String name) {
+        for (User u : users) {
+            if (u.name.equalsIgnoreCase(name)) {
+                return u;
+            }
+        }
+        return null;
+    }
+}
+
+Sample Output:
+C:\Users\DELL\.jdks\openjdk-22.0.2\bin\java.exe "-javaagent:C:\Program Files\JetBrains\IntelliJ IDEA Community Edition 2024.1.4\lib\idea_rt.jar=57220:C:\Program Files\JetBrains\IntelliJ IDEA Community Edition 2024.1.4\bin" -Dfile.encoding=UTF-8 -Dsun.stdout.encoding=UTF-8 -Dsun.stderr.encoding=UTF-8 -classpath "C:\Users\DELL\IdeaProjects\DSA\PLA Java\out\production\PLA Java" LibraryManagementSystem
+
+Library Management System Menu:
+1. View Books
+2. Add Book
+3. Register User
+4. Borrow Book
+5. Return Book
+6. View User Borrowed Books
+7. Exit
+Choose an option: 1
+Available Books:
+1. 1984 by George Orwell
+2. To Kill a Mockingbird by Harper Lee
+
+Library Management System Menu:
+1. View Books
+2. Add Book
+3. Register User
+4. Borrow Book
+5. Return Book
+6. View User Borrowed Books
+7. Exit
+Choose an option: 2
+Enter book title: 1984 by George Orwell
+Enter author name: George Orwell
+Book added successfully.
+
+Library Management System Menu:
+1. View Books
+2. Add Book
+3. Register User
+4. Borrow Book
+5. Return Book
+6. View User Borrowed Books
+7. Exit
+Choose an option: 5
+Enter your user name: Piyush Kumar
+User not found.
+
+Library Management System Menu:
+1. View Books
+2. Add Book
+3. Register User
+4. Borrow Book
+5. Return Book
+6. View User Borrowed Books
+7. Exit
+Choose an option: 3
+Enter user name: Piyush Kumar
+User registered successfully.
+
+Library Management System Menu:
+1. View Books
+2. Add Book
+3. Register User
+4. Borrow Book
+5. Return Book
+6. View User Borrowed Books
+7. Exit
+Choose an option: 6
+Enter user name: Piyush Kumar
+Piyush Kumar has not borrowed any books.
+
+Library Management System Menu:
+1. View Books
+2. Add Book
+3. Register User
+4. Borrow Book
+5. Return Book
+6. View User Borrowed Books
+7. Exit
